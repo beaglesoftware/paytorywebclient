@@ -1,80 +1,6 @@
 import Link from "next/link";
-import SimpleTable from "../../components/Table";
-import { SubmitExpenseForm } from "../../components/SubmitExpenseForm";
-import { SubmitIncomeForm } from "../../components/SubmitIncomeForm";
-import {
-  CookieValueTypes,
-  getCookie,
-} from "cookies-next/server";
-import { cookies } from "next/headers";
 
-// You might also want a function to log out:
-  const logout = () => {
-      localStorage.removeItem('authToken');
-      // Redirect logic will happen in the component using this hook (see Step 3)
-  }
-
-export async function fetchData(token: CookieValueTypes) {
-  try {
-    const response = await fetch("http://localhost:8010/api/q/generalstat/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // *** THIS IS WHERE THE TOKEN IS ATTACHED ***
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error when trying to fetch stat:", error);
-  }
-}
-
-export default async function Home() {
-  let IsAuthenticated;
-
-  const token = await getCookie("access_token", { cookies });
-  // console.log(token);
-  if (token) {
-    IsAuthenticated = true;
-  } else {
-    IsAuthenticated = false;
-  }
-
-  if (!IsAuthenticated) {
-    return (
-      <div className="flex content-center justify-center items-center">
-        You are not logged in. Please login at&nbsp;
-        <Link className="text-blue-600" href="/login">
-          this page
-        </Link>
-        .
-      </div>
-    );
-  }
-
-  const data = await fetchData(token);
-
-  const headers = [
-    "Ex/In",
-    "Number of Ex/In",
-    "Amount",
-  ] as const;
-  // const rows = [
-  //   ["Alice Johnson", "alice@example.com", "Active"],
-  //   ["Bob Smith", "bob@example.com", "Inactive"],
-  //   ["Charlie Brown", "charlie@example.com", "Active"],
-  // ];
-  const rows = [
-    ["Expense", data.expense.amount__count, data.expense.amount__sum],
-    ["Income", data.income.amount__count, data.income.amount__sum],
-  ];
-
+export default function Home() {
   return (
     <div>
       <main>
@@ -97,7 +23,6 @@ export default async function Home() {
                     aria-hidden="true"
                     className="size-6 in-aria-expanded:hidden"
                   >
-                    x{" "}
                     <path
                       d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
                       strokeLinecap="round"
@@ -180,31 +105,10 @@ export default async function Home() {
                     />
                   </svg>
                 </button>
-                <Link
-                  href="/logout"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"
-                >
-                  Log out
-                </Link>
               </div>
             </div>
           </div>
         </nav>
-        <h1 className="text-5xl m-5 font-black">Welcome</h1>
-        <h3 className="text-3xl m-5 font-bold">
-          Table of Expenses and Incomes
-        </h3>
-        <SimpleTable headers={headers} rows={rows} />
-        <div className="flex flex-row mr-50 ml-5">
-          <div className="mr-3 border rounded-lg">
-            <h4 className="text-2xl mr-50 mt-1 ml-5 mb-3">Add Expense</h4>
-            <SubmitExpenseForm></SubmitExpenseForm>
-          </div>
-          <div className="mr-3 border rounded-lg">
-            <h4 className="text-2xl mr-50 mt-1 ml-5 mb-3">Add Income</h4>
-            <SubmitIncomeForm></SubmitIncomeForm>
-          </div>
-        </div>
       </main>
     </div>
   );

@@ -9,9 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tailwindplus/elements": "^1.0.22",
+    "axios": "^1.15.2",
+    "cookies-next": "^6.1.1",
+    "js-cookie": "^3.0.5",
     "next": "16.2.4",
+    "node-fetch": "^3.3.2",
+    "qs": "^6.15.1",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-login-page": "^1.0.6",
+    "react-router-dom": "^7.14.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
