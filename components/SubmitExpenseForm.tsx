@@ -3,6 +3,7 @@
 import { SyntheticEvent, useState } from "react";
 import Router from "next/navigation";
 import { useGetCookie } from "cookies-next";
+import axios from "axios";
 
 export function SubmitExpenseForm() {
   const getCookie = useGetCookie();
@@ -26,39 +27,25 @@ export function SubmitExpenseForm() {
     e.preventDefault();
     setStatus("loading");
 
-    // --- Data Preparation ---
-    const expenseData = {
-      text: name,
-      date: date,
-      amount: parseFloat(amount), // Ensure amount is a number
-    };
-
     try {
       // 2. Perform the API Call
-      const response = await fetch(
+      const response = axios.post(
         "http://localhost:8010/api/submit/expense/",
         {
-          method: "POST",
+          text: name,
+          date: date,
+          amount: parseFloat(amount),
+        },
+        {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${API_TOKEN}`, // Authenticate with the token
           },
-          body: JSON.stringify(expenseData),
         },
       );
 
-      // 3. Check Server Response
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.detail ||
-            `Server responded with status: ${response.status}`,
-        );
-      }
-
       // 4. Success Handling
       setStatus("success");
-      console.log("Expense Submitted Successfully:", response.json());
 
       // Clear inputs after successful submission
       setName("");
@@ -95,7 +82,7 @@ export function SubmitExpenseForm() {
       {/* The form now only serves as a container for the inputs */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium">
             Name:
           </label>
           <input
@@ -109,7 +96,7 @@ export function SubmitExpenseForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium">
             Date:
           </label>
           <input
@@ -123,7 +110,7 @@ export function SubmitExpenseForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium">
             Amount:
           </label>
           <input

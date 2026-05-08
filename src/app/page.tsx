@@ -7,29 +7,22 @@ import {
   getCookie,
 } from "cookies-next/server";
 import { cookies } from "next/headers";
-
-// You might also want a function to log out:
-  const logout = () => {
-      localStorage.removeItem('authToken');
-      // Redirect logic will happen in the component using this hook (see Step 3)
-  }
+import axios from "axios";
 
 export async function fetchData(token: CookieValueTypes) {
   try {
-    const response = await fetch("http://localhost:8010/api/q/generalstat/", {
-      method: "POST",
+    const response = axios.post("http://localhost:8010/api/q/generalstat/", {}, {
       headers: {
         "Content-Type": "application/json",
-        // *** THIS IS WHERE THE TOKEN IS ATTACHED ***
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (!response.ok) {
+    if (!response) {
       throw new Error("Network response was not ok");
     }
 
-    return await response.json();
+    return (await response).data;
   } catch (error) {
     console.error("Error when trying to fetch stat:", error);
   }

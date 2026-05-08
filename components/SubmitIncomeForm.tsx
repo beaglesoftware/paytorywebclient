@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { SyntheticEvent, useState } from "react";
 import { useGetCookie } from "cookies-next";
+import axios from "axios";
 
 export function SubmitIncomeForm() {
   const getCookie = useGetCookie();
@@ -35,28 +36,22 @@ export function SubmitIncomeForm() {
 
     try {
       // 2. Perform the API Call
-      const response = await fetch("http://localhost:8010/api/submit/income/", {
-        method: "POST",
+      const response = axios.post("http://localhost:8010/api/submit/income/",
+        {
+          text: name,
+          date: date,
+          amount: parseFloat(amount),
+        },
+        {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${API_TOKEN}`, // Authenticate with the token
         },
-        body: JSON.stringify(incomeData),
       });
-
-      // 3. Check Server Response
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.detail ||
-            `Server responded with status: ${response.status}`,
-        );
-      }
 
       // 4. Success Handling
       setStatus("success");
-      console.log("Income Submitted Successfully:", response.json());
-
+      
       // Clear inputs after successful submission
       setName("");
       setDate("");
@@ -92,7 +87,7 @@ export function SubmitIncomeForm() {
       {/* The form now only serves as a container for the inputs */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium">
             Name:
           </label>
           <input
@@ -106,7 +101,7 @@ export function SubmitIncomeForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium">
             Date:
           </label>
           <input
@@ -120,7 +115,7 @@ export function SubmitIncomeForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium">
             Amount:
           </label>
           <input
